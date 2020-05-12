@@ -1,12 +1,10 @@
 # feather-node
 
-=========
-
-Node.js library the Feather API.
+[WIP] Node.js library the Feather API.
 
 ## Installation
 
-`npm install @jdaudier/number-formatter`
+`npm install @feather/feather-id`
 
 ## Usage
 
