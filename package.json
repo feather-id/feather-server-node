@@ -2,7 +2,7 @@
   "name": "feather-id",
   "version": "0.1.0",
   "description": "Node.js library for the Feather API",
-  "main": "index.js",
+  "main": "lib/feather.js",
   "scripts": {
     "test": "mocha --reporter spec"
   },
