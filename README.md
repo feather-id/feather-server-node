@@ -1,4 +1,4 @@
-# feather-node
+# Feather Node.js Library
 
 [WIP] Node.js library the Feather API.
 
