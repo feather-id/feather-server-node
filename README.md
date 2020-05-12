@@ -4,12 +4,12 @@
 
 ## Installation
 
-`npm install @feather/feather-id`
+`npm install feather-id`
 
 ## Usage
 
 ```
-const helloWorld = require('@feather-id/feather');
+const helloWorld = require('feather-id');
 console.log(helloWorld());
 ```
 
