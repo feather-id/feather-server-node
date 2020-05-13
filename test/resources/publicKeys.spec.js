@@ -1,6 +1,7 @@
 "use strict";
 
-const feather = require("../../testUtils").getSpyableFeather();
+const testUtils = require("../../testUtils");
+const feather = testUtils.getSpyableFeather();
 
 const expect = require("chai").expect;
 
@@ -12,6 +13,16 @@ describe("publicKeys resource", function() {
       path: "/publicKeys",
       data: { id: "foo" }
     });
+  });
+
+  it("[retrieve] should reject gateway error", function() {
+    const mockFeather = { ...feather };
+    mockFeather._gateway.sendRequest = (method, path, data) => {
+      return new Promise(function(resolve, reject) {
+        reject(new Error("boom"));
+      });
+    };
+    expect(mockFeather.publicKeys.retrieve("foo")).to.be.rejectedWith("boom");
   });
 
   it("[retrieve] should throw error if ID is not a string", function() {
@@ -30,5 +41,14 @@ describe("publicKeys resource", function() {
     expect(() => {
       feather.publicKeys.retrieve(null);
     }).to.throw(/ID must be a string/);
+  });
+
+  it("[retrieve] should returned cached public key", function() {
+    const pubKey = testUtils.getFakePublicKey();
+    const mockFeather = { ...feather };
+    mockFeather.publicKeys._cachedPublicKeys["foo"] = pubKey;
+    expect(mockFeather.publicKeys.retrieve("foo")).to.eventually.deep.equal(
+      pubKey
+    );
   });
 });
