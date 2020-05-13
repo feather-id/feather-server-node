@@ -30,6 +30,24 @@ const sampleReponse_authenticated = {
   revoked_at: null
 };
 
+const sampleReponse_revoked = {
+  id: "SES_82d099a8-f06d-490d-b68b-8a4546842bf1",
+  object: "session",
+  type: "authenticated",
+  status: "revoked",
+  token: "foo",
+  user_id: "USR_e4e9bc4c-19c8-4da9-9eb3-4553d4bd37a6",
+  created_at: "2020-01-01T15:40:40.61536699Z",
+  revoked_at: "2020-01-01T16:40:40.61536699Z"
+};
+
+const sampleResponse_list = {
+  object: "list",
+  has_more: false,
+  url: "/foo",
+  data: [sampleReponse_anonymous, sampleReponse_authenticated]
+};
+
 describe("sessions resource", function() {
   before(function() {
     feather.sessions._feather = feather;
@@ -61,6 +79,7 @@ describe("sessions resource", function() {
   });
 
   it("[list] should list sessions", function() {
+    feather._gateway.mockResponse = sampleResponse_list;
     feather.sessions.list("USR_foo").then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
@@ -89,6 +108,7 @@ describe("sessions resource", function() {
   });
 
   it("[retrieve] should retrieve a session", function() {
+    feather._gateway.mockResponse = sampleReponse_authenticated;
     feather.sessions.retrieve("SES_foo").then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
@@ -117,6 +137,7 @@ describe("sessions resource", function() {
   });
 
   it("[revoke] should revoke a session", function() {
+    feather._gateway.mockResponse = sampleReponse_revoked;
     const session = {
       token: "foo"
     };
@@ -166,6 +187,7 @@ describe("sessions resource", function() {
   });
 
   it("[upgrade] should upgrade a session", function() {
+    feather._gateway.mockResponse = sampleReponse_authenticated;
     const credential = {
       token: "foo"
     };
