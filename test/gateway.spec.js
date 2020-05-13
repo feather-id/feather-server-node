@@ -87,6 +87,26 @@ describe("gateway", function() {
     });
   });
 
+  it("should support overriding the protocol", function() {
+    const g = Gateway("foo", {
+      host: "localhost",
+      port: "123",
+      protocol: "http"
+    });
+    const scope = nock("http://localhost:123", {
+      reqheaders: {
+        authorization: "Basic Zm9vOg==",
+        "content-type": "application/x-www-form-urlencoded"
+      }
+    })
+      .get("/v1/foo")
+      .reply(200, { foo: "bar" });
+
+    expect(g.sendRequest("GET", "/foo", null)).to.eventually.deep.equal({
+      foo: "bar"
+    });
+  });
+
   it("should reject an error", function() {
     const scope = nock("https://api.feather.id")
       .get("/v1/foo")

@@ -67,6 +67,20 @@ describe("feather constructor", function() {
     }).to.not.throw();
   });
 
+  it("should only accept a valid protocol", () => {
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), {
+        protocol: "foo"
+      });
+    }).to.throw(/Protocol must be one of either: 'http' or 'https'/);
+
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), {
+        protocol: "http"
+      });
+    }).to.not.throw();
+  });
+
   it("should create a gateway", () => {
     expect(() => {
       return Feather(testUtils.getFeatherApiKey(), {})._gateway;
