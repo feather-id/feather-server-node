@@ -5,20 +5,19 @@ const Feather = require("../lib/feather");
 const feather = require("../lib/feather")(testUtils.getFeatherApiKey());
 
 const expect = require("chai").expect;
-const assert = require("chai").assert;
 
-describe("feather config", function() {
-  it("should only accept a string api key", function() {
+describe("feather constructor", function() {
+  it("should only accept an api key of type string", function() {
+    expect(() => {
+      Feather(true);
+    }).to.throw(/API key must be a string/);
+
     expect(() => {
       Feather(123);
     }).to.throw(/API key must be a string/);
 
     expect(() => {
       Feather({});
-    }).to.throw(/API key must be a string/);
-
-    expect(() => {
-      Feather(true);
     }).to.throw(/API key must be a string/);
 
     expect(() => {
