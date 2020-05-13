@@ -1,8 +1,12 @@
 "use strict";
 
-const feather = require("../../testUtils").getSpyableFeather();
+const testUtils = require("../../testUtils");
+const feather = testUtils.getSpyableFeather();
 
-const expect = require("chai").expect;
+const chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe("sessions resource", function() {
   it("[create] should create an anonymous session", function() {
@@ -174,5 +178,80 @@ describe("sessions resource", function() {
     expect(() => {
       feather.sessions.upgrade("SES_foo", null);
     }).to.throw(/Credential cannot be null/);
+  });
+
+  it("[validate] should validate a stale session", function() {
+    var mockFeather = { ...feather };
+    mockFeather.sessions._parseToken = token => {
+      return new Promise(function(resolve, reject) {
+        resolve({
+          id: "SES_foo",
+          status: "stale",
+          token
+        });
+      });
+    };
+    return mockFeather.sessions.validate("fooToken").then(data => {
+      expect(mockFeather._gateway.LAST_REQUEST).to.deep.equal({
+        method: "POST",
+        path: "/sessions/SES_foo/validate",
+        data: { session_token: "fooToken" }
+      });
+    });
+  });
+
+  it("[validate] should resolve an active session", function() {
+    var mockFeather = { ...feather };
+    mockFeather.sessions._parseToken = token => {
+      return new Promise(function(resolve, reject) {
+        resolve({
+          id: "SES_foo",
+          status: "active",
+          token
+        });
+      });
+    };
+    mockFeather._gateway.LAST_REQUEST = null;
+    return mockFeather.sessions.validate("fooToken").then(data => {
+      expect(data).to.deep.equal({
+        id: "SES_foo",
+        status: "active",
+        token: "fooToken"
+      });
+      expect(mockFeather._gateway.LAST_REQUEST).to.be.null;
+    });
+  });
+
+  it("[validate] should reject parsing errors", function() {
+    var mockFeather = { ...feather };
+    mockFeather.sessions._parseToken = token => {
+      return new Promise(function(resolve, reject) {
+        reject(new Error("parsing boom"));
+      });
+    };
+    expect(mockFeather.sessions.validate("fooToken")).to.be.rejectedWith(
+      "parsing boom"
+    );
+  });
+
+  it("[validate] should reject gateway errors", function() {
+    var mockFeather = { ...feather };
+    mockFeather.sessions._parseToken = token => {
+      return new Promise(function(resolve, reject) {
+        resolve({
+          id: "SES_foo",
+          status: "stale",
+          token
+        });
+      });
+    };
+    mockFeather._gateway.sendRequest = (method, path, data) => {
+      return new Promise(function(resolve, reject) {
+        reject(new Error("gateway boom"));
+      });
+    };
+    expect(mockFeather.sessions.validate("fooToken")).to.be.rejectedWith(
+      "gateway boom"
+    );
   });
 });

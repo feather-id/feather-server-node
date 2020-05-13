@@ -41,6 +41,24 @@ describe("users resource", function() {
     });
   });
 
+  it("[update] should throw error if id is not a string", function() {
+    expect(() => {
+      feather.users.update(true, null, null, null);
+    }).to.throw(/ID must be a string/);
+
+    expect(() => {
+      feather.users.update(123, null, null, null);
+    }).to.throw(/ID must be a string/);
+
+    expect(() => {
+      feather.users.update({}, null, null, null);
+    }).to.throw(/ID must be a string/);
+
+    expect(() => {
+      feather.users.retrieve(null, null, null, null);
+    }).to.throw(/ID must be a string/);
+  });
+
   it("[update] should throw error if email is not a string", function() {
     expect(() => {
       feather.users.update("USR_foo", true, null, null);
