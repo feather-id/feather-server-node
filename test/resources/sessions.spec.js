@@ -64,19 +64,19 @@ describe("sessions resource", function() {
 
   it("[retrieve] should throw error if ID is not a string", function() {
     expect(() => {
-      feather.sessions.list(true);
+      feather.sessions.retrieve(true);
     }).to.throw(/ID must be a string/);
 
     expect(() => {
-      feather.sessions.list(123);
+      feather.sessions.retrieve(123);
     }).to.throw(/ID must be a string/);
 
     expect(() => {
-      feather.sessions.list({});
+      feather.sessions.retrieve({});
     }).to.throw(/ID must be a string/);
 
     expect(() => {
-      feather.sessions.list(null);
+      feather.sessions.retrieve(null);
     }).to.throw(/ID must be a string/);
   });
 

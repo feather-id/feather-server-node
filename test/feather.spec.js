@@ -29,6 +29,28 @@ describe("feather constructor", function() {
     }).to.not.throw();
   });
 
+  it("should throw error if config is not an object", () => {
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), true);
+    }).to.throw(/Config must be an object/);
+
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), 123);
+    }).to.throw(/Config must be an object/);
+
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), "test_123");
+    }).to.throw(/Config must be an object/);
+
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), null);
+    }).to.not.throw();
+
+    expect(() => {
+      Feather(testUtils.getFeatherApiKey(), {});
+    }).to.not.throw();
+  });
+
   it("should only accept a config with allowed properties", () => {
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), {
