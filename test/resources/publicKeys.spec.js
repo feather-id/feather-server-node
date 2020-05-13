@@ -14,8 +14,8 @@ describe("publicKeys resource", function() {
     feather.publicKeys.retrieve("foo").then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
-        path: "/publicKeys",
-        data: { id: "foo" }
+        path: "/publicKeys/foo",
+        data: null
       });
     });
   });
