@@ -4,14 +4,31 @@ const feather = require("../../testUtils").getSpyableFeather();
 
 const expect = require("chai").expect;
 
-const user_empty = {
+const sampleResponse_empty = {
   id: "USR_e4e9bc4c-19c8-4da9-9eb3-4553d4bd37a6",
   object: "user",
   email: null,
   username: null,
-  metadata: "{}",
+  metadata: `{}`,
   created_at: "2020-05-13T19:41:45.566791Z",
   updated_at: "2020-05-13T19:41:45.566791Z"
+};
+
+const sampleResponse_username = {
+  id: "USR_e2969a70-bcde-4e63-a1b6-e479a0c20fb4",
+  object: "user",
+  email: null,
+  username: "foo",
+  metadata: `{"foo": 123}`,
+  created_at: "2020-05-13T19:41:45.566791Z",
+  updated_at: "2020-05-13T19:41:45.566791Z"
+};
+
+const sampleResponse_list = {
+  object: "list",
+  has_more: false,
+  url: "/foo",
+  data: [sampleResponse_empty, sampleResponse_username]
 };
 
 describe("users resource", function() {
@@ -19,8 +36,19 @@ describe("users resource", function() {
     feather.users._feather = feather;
   });
 
+  it("[list] should list sessions", function() {
+    feather._gateway.mockResponse = sampleResponse_list;
+    feather.users.list("USR_foo").then(res => {
+      expect(feather._gateway.LAST_REQUEST).to.deep.equal({
+        method: "GET",
+        path: "/users",
+        data: null
+      });
+    });
+  });
+
   it("[retrieve] should retrieve a user", function() {
-    feather._gateway.mockResponse = user_empty;
+    feather._gateway.mockResponse = sampleResponse_empty;
     feather.users.retrieve("USR_foo").then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
@@ -49,6 +77,7 @@ describe("users resource", function() {
   });
 
   it("[update] should update a user", function() {
+    feather._gateway.mockResponse = sampleResponse_username;
     feather.users.update("USR_foo", "foo", "bar", {}).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
