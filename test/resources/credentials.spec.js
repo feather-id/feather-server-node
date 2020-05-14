@@ -44,6 +44,7 @@ describe("credentials resource", function() {
         password: "quz"
       })
       .then(res => {
+        expect(res).to.deep.equal(sampleReponse_requiresOneTimeCode);
         expect(feather._gateway.LAST_REQUEST).to.deep.equal({
           method: "POST",
           path: "/credentials",
@@ -185,6 +186,7 @@ describe("credentials resource", function() {
   it("[update] should update a credential", function() {
     feather._gateway.mockResponse = sampleReponse_valid;
     feather.credentials.update("foo", { one_time_code: "bar" }).then(res => {
+      expect(res).to.deep.equal(sampleReponse_valid);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/credentials/foo",

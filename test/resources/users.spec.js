@@ -40,6 +40,7 @@ describe("users resource", function() {
     const data = { limit: 100 };
     feather._gateway.mockResponse = sampleResponse_list;
     feather.users.list(data).then(res => {
+      expect(res).to.deep.equal(sampleResponse_list);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
         path: "/users",
@@ -51,6 +52,7 @@ describe("users resource", function() {
   it("[retrieve] should retrieve a user", function() {
     feather._gateway.mockResponse = sampleResponse_empty;
     feather.users.retrieve("USR_foo").then(res => {
+      expect(res).to.deep.equal(sampleResponse_empty);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
         path: "/users",
@@ -81,6 +83,7 @@ describe("users resource", function() {
     const data = { email: "foo", username: "bar", metadata: {} };
     feather._gateway.mockResponse = sampleResponse_username;
     feather.users.update("USR_foo", data).then(res => {
+      expect(res).to.deep.equal(sampleResponse_username);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/users/USR_foo",

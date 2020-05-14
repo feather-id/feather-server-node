@@ -3,6 +3,7 @@
 const testUtils = require("../../testUtils");
 const feather = testUtils.getSpyableFeather();
 
+const pubKey = testUtils.getFakePublicKey();
 const expect = require("chai").expect;
 
 describe("publicKeys resource", function() {
@@ -48,7 +49,6 @@ describe("publicKeys resource", function() {
   });
 
   it("[retrieve] should returned cached public key", function() {
-    const pubKey = testUtils.getFakePublicKey();
     const mockFeather = { ...feather };
     mockFeather.publicKeys._cachedPublicKeys["foo"] = pubKey;
     expect(mockFeather.publicKeys.retrieve("foo")).to.eventually.deep.equal(

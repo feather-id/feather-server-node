@@ -56,6 +56,7 @@ describe("sessions resource", function() {
   it("[create] should create an anonymous session", function() {
     feather._gateway.mockResponse = sampleReponse_anonymous;
     feather.sessions.create(null).then(res => {
+      expect(res).to.deep.equal(sampleReponse_anonymous);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions",
@@ -70,6 +71,7 @@ describe("sessions resource", function() {
       credential_token: "foo"
     };
     feather.sessions.create(data).then(res => {
+      expect(res).to.deep.equal(sampleReponse_authenticated);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions",
@@ -82,6 +84,7 @@ describe("sessions resource", function() {
     const data = { user_id: "USR_foo" };
     feather._gateway.mockResponse = sampleResponse_list;
     feather.sessions.list(data).then(res => {
+      expect(res).to.deep.equal(sampleResponse_list);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
         path: "/sessions",
@@ -107,6 +110,7 @@ describe("sessions resource", function() {
   it("[retrieve] should retrieve a session", function() {
     feather._gateway.mockResponse = sampleReponse_authenticated;
     feather.sessions.retrieve("SES_foo").then(res => {
+      expect(res).to.deep.equal(sampleReponse_authenticated);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
         path: "/sessions/SES_foo",
@@ -139,6 +143,7 @@ describe("sessions resource", function() {
       session_token: "foo"
     };
     feather.sessions.revoke("SES_foo", data).then(res => {
+      expect(res).to.deep.equal(sampleReponse_revoked);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions/SES_foo/revoke",
@@ -189,6 +194,7 @@ describe("sessions resource", function() {
       credential_token: "foo"
     };
     feather.sessions.upgrade("SES_foo", data).then(res => {
+      expect(res).to.deep.equal(sampleReponse_authenticated);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions/SES_foo/upgrade",
