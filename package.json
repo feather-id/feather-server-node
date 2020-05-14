@@ -4,8 +4,8 @@
   "description": "Node.js library for the Feather API",
   "main": "lib/feather.js",
   "scripts": {
-    "test": "mocha --reporter spec 'test/**/*.spec.js'",
-    "cover": "./node_modules/.bin/nyc mocha 'test/**/*.spec.js' --reporter spec --timeout 30000 --exit",
+    "test": "./node_modules/.bin/mocha --reporter spec 'test/**/*.spec.js'",
+    "cover": "./node_modules/.bin/nyc --reporter=lcov --reporter=text ./node_modules/.bin/mocha 'test/**/*.spec.js' --all --timeout 30000 --exit",
     "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
