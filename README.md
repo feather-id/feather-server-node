@@ -4,7 +4,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/feather-id/feather-node/badge.svg?branch=master)](https://coveralls.io/github/feather-id/feather-node?branch=master)
 
-This library provides convenient access to the Feather API for applications running in a Node.js server environment.
+This library provides a convenient interface to the Feather API for applications running in a Node.js server environment.
 
 ## Installation
 
@@ -16,7 +16,7 @@ $ yarn add feather-id
 
 ## Usage
 
-The package needs to be configured with your project's API keys, available on the [Feather Dashboard](https://feather.id/dashboard). Include the API key when you require the package:
+The Feather package must be initialized with your project's API key, available on the [Feather Dashboard](https://feather.id/dashboard). Include the API key when you require the package:
 
 ```js
 const feather = require("feather-id")("live_...");
@@ -39,13 +39,13 @@ feather.credentials
     });
   })
   .then(session => {
-    return feather.users.retrieve(session.userId);
+    return feather.users.retrieve(session.user_id);
   })
   .then(user => {
     // User of the newly created session
   })
   .catch(error => {
-    // Handle an error
+    // Handle errors
   });
 ```
 
