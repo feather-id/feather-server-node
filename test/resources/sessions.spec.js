@@ -149,19 +149,19 @@ describe("sessions resource", function() {
 
   it("[revoke] should throw error if ID is not a string", function() {
     expect(feather.sessions.revoke(true, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.revoke(123, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.revoke({}, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.revoke(null, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
   });
 
@@ -199,19 +199,19 @@ describe("sessions resource", function() {
 
   it("[upgrade] should throw error if ID is not a string", function() {
     expect(feather.sessions.upgrade(true, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.upgrade(123, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.upgrade({}, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.upgrade(null, {})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
   });
 

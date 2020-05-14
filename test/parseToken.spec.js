@@ -19,23 +19,23 @@ const mockPublicKeys = {
 describe("parseToken", function() {
   it("should reject an invalid JWT", function() {
     expect(parseToken("foo", null)).to.be.rejectedWith(
-      "Token has an invalid format"
+      "The session token is invalid"
     );
 
     expect(parseToken(123, null)).to.be.rejectedWith(
-      "Token has an invalid format"
+      "The session token is invalid"
     );
 
     expect(parseToken(true, null)).to.be.rejectedWith(
-      "Token has an invalid format"
+      "The session token is invalid"
     );
 
     expect(parseToken({}, null)).to.be.rejectedWith(
-      "Token has an invalid format"
+      "The session token is invalid"
     );
 
     expect(parseToken(null, null)).to.be.rejectedWith(
-      "Token has an invalid format"
+      "The session token is invalid"
     );
   });
 
@@ -57,91 +57,91 @@ describe("parseToken", function() {
   it("should reject an invalid signature algorithm", function() {
     const token = testUtils.getSampleSessionTokens()["invalidAlg"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid signature algorithm"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid signature", function() {
     const token = testUtils.getSampleSessionTokens()["invalidSignature"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid signature"
+      "The session token is invalid"
     );
   });
 
   it("should reject a modified token", function() {
     const token = testUtils.getSampleSessionTokens()["modified"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Token has an invalid format"
+      "The session token is invalid"
     );
   });
 
   it("should reject a missing key id", function() {
     const token = testUtils.getSampleSessionTokens()["missingKeyId"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid key ID"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid token id", function() {
     const token = testUtils.getSampleSessionTokens()["invalidTokenId"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: jti"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid issuer", function() {
     const token = testUtils.getSampleSessionTokens()["invalidIssuer"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: iss"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid subject", function() {
     const token = testUtils.getSampleSessionTokens()["invalidSubject"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: sub"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid audience", function() {
     const token = testUtils.getSampleSessionTokens()["invalidAudience"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: aud"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid session id", function() {
     const token = testUtils.getSampleSessionTokens()["invalidSessionId"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: ses"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid session type", function() {
     const token = testUtils.getSampleSessionTokens()["invalidType"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: typ"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid issued at", function() {
     const token = testUtils.getSampleSessionTokens()["invalidIssueAt"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: iat"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid session created at", function() {
     const token = testUtils.getSampleSessionTokens()["invalidCreatedAt"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: cat"
+      "The session token is invalid"
     );
   });
 
   it("should reject an invalid session expires at", function() {
     const token = testUtils.getSampleSessionTokens()["invalidExpiresAt"];
     return expect(parseToken(token, mockPublicKeys)).to.be.rejectedWith(
-      "Invalid claim: exp"
+      "The session token is invalid"
     );
   });
 

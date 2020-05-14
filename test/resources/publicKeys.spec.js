@@ -22,19 +22,19 @@ describe("publicKeys resource", function() {
 
   it("[retrieve] should throw error if ID is not a string", function() {
     expect(feather.publicKeys.retrieve(true)).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.publicKeys.retrieve(123)).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.publicKeys.retrieve({})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.publicKeys.retrieve(null)).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
   });
 

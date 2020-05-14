@@ -10,19 +10,19 @@ describe("feather constructor", function() {
   it("should only accept an api key of type string", function() {
     expect(() => {
       Feather(true);
-    }).to.throw(/API key must be a string/);
+    }).to.throw(`expected 'apiKey' to be of type 'string'`);
 
     expect(() => {
       Feather(123);
-    }).to.throw(/API key must be a string/);
+    }).to.throw(`expected 'apiKey' to be of type 'string'`);
 
     expect(() => {
       Feather({});
-    }).to.throw(/API key must be a string/);
+    }).to.throw(`expected 'apiKey' to be of type 'string'`);
 
     expect(() => {
       Feather(null);
-    }).to.throw(/API key must be a string/);
+    }).to.throw(`expected 'apiKey' to be of type 'string'`);
 
     expect(() => {
       Feather("test_123");
@@ -32,15 +32,15 @@ describe("feather constructor", function() {
   it("should throw error if config is not an object", () => {
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), true);
-    }).to.throw(/Config must be an object/);
+    }).to.throw(`expected 'config' to be of type 'object'`);
 
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), 123);
-    }).to.throw(/Config must be an object/);
+    }).to.throw(`expected 'config' to be of type 'object'`);
 
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), "test_123");
-    }).to.throw(/Config must be an object/);
+    }).to.throw(`expected 'config' to be of type 'object'`);
 
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), null);
@@ -57,7 +57,9 @@ describe("feather constructor", function() {
         foo: "bar",
         baz: "qux"
       });
-    }).to.throw(/Config may not contain the following attributes: foo, baz/);
+    }).to.throw(
+      `'config' contained the following unknown attributes: foo, baz`
+    );
 
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), {
@@ -72,7 +74,7 @@ describe("feather constructor", function() {
       Feather(testUtils.getFeatherApiKey(), {
         protocol: "foo"
       });
-    }).to.throw(/Protocol must be one of either: 'http' or 'https'/);
+    }).to.throw(`expected 'protocol' to be one of either: 'http' or 'https'`);
 
     expect(() => {
       Feather(testUtils.getFeatherApiKey(), {
