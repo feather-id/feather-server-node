@@ -1,8 +1,6 @@
 # Feather Node.js Library
 
-[![Build Status](https://travis-ci.org/feather-id/feather-node.svg?branch=master)](https://travis-ci.org/feather-id/feather-node)
-
-[![Coverage Status](https://coveralls.io/repos/github/feather-id/feather-node/badge.svg?branch=master)](https://coveralls.io/github/feather-id/feather-node?branch=master)
+![npm](https://img.shields.io/npm/v/feather-id?color=5c70d6) [![Build Status](https://travis-ci.org/feather-id/feather-node.svg?branch=master)](https://travis-ci.org/feather-id/feather-node) [![Coverage Status](https://coveralls.io/repos/github/feather-id/feather-node/badge.svg?branch=master)](https://coveralls.io/github/feather-id/feather-node?branch=master)
 
 This library provides a convenient interface to the Feather API for applications running in a Node.js server environment.
 
