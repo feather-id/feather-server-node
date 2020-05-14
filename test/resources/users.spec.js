@@ -37,12 +37,13 @@ describe("users resource", function() {
   });
 
   it("[list] should list sessions", function() {
+    const data = { limit: 100 };
     feather._gateway.mockResponse = sampleResponse_list;
-    feather.users.list("USR_foo").then(res => {
+    feather.users.list(data).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
         path: "/users",
-        data: null
+        data: data
       });
     });
   });

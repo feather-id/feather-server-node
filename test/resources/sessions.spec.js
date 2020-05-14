@@ -244,11 +244,12 @@ describe("sessions resource", function() {
         });
       });
     };
-    return mockFeather.sessions.validate("fooToken").then(data => {
+    const data = { session_token: "fooToken" };
+    return mockFeather.sessions.validate(data).then(res => {
       expect(mockFeather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions/SES_foo/validate",
-        data: { session_token: "fooToken" }
+        data: data
       });
     });
   });
@@ -265,8 +266,9 @@ describe("sessions resource", function() {
       });
     };
     mockFeather._gateway.LAST_REQUEST = null;
-    return mockFeather.sessions.validate("fooToken").then(data => {
-      expect(data).to.deep.equal({
+    const data = { session_token: "fooToken" };
+    return mockFeather.sessions.validate(data).then(res => {
+      expect(res).to.deep.equal({
         id: "SES_foo",
         status: "active",
         token: "fooToken"
@@ -282,7 +284,8 @@ describe("sessions resource", function() {
         reject(new Error("parsing boom"));
       });
     };
-    expect(mockFeather.sessions.validate("fooToken")).to.be.rejectedWith(
+    const data = { session_token: "fooToken" };
+    expect(mockFeather.sessions.validate(data)).to.be.rejectedWith(
       "parsing boom"
     );
   });
@@ -303,7 +306,8 @@ describe("sessions resource", function() {
         reject(new Error("gateway boom"));
       });
     };
-    expect(mockFeather.sessions.validate("fooToken")).to.be.rejectedWith(
+    const data = { session_token: "fooToken" };
+    expect(mockFeather.sessions.validate(data)).to.be.rejectedWith(
       "gateway boom"
     );
   });
