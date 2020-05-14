@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/feather-id/feather-node.svg?branch=master)](https://travis-ci.org/feather-id/feather-node)
 
+[![Coverage Status](https://coveralls.io/repos/github/feather-id/feather-node/badge.svg?branch=master)](https://coveralls.io/github/feather-id/feather-node?branch=master)
+
 This library provides convenient access to the Feather API for applications running in a Node.js server environment.
 
 ## Installation

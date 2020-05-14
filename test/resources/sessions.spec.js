@@ -59,51 +59,48 @@ describe("sessions resource", function() {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions",
-        data: {}
+        data: null
       });
     });
   });
 
   it("[create] should create an authenticated session", function() {
     feather._gateway.mockResponse = sampleReponse_authenticated;
-    const credential = {
-      token: "foo"
+    const data = {
+      credential_token: "foo"
     };
-    feather.sessions.create(credential).then(res => {
+    feather.sessions.create(data).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions",
-        data: { credential_token: "foo" }
+        data: data
       });
     });
   });
 
   it("[list] should list sessions", function() {
+    const data = { user_id: "USR_foo" };
     feather._gateway.mockResponse = sampleResponse_list;
-    feather.sessions.list("USR_foo").then(res => {
+    feather.sessions.list(data).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
         path: "/sessions",
-        data: { user_id: "USR_foo" }
+        data
       });
     });
   });
 
   it("[list] should throw error if user ID is not a string", function() {
-    expect(feather.sessions.list(true)).to.be.rejectedWith(
-      /User ID must be a string/
+    expect(feather.sessions.list({ user_id: true })).to.be.rejectedWith(
+      `expected param 'user_id' to be of type 'string'`
     );
 
-    expect(feather.sessions.list(123)).to.be.rejectedWith(
-      /User ID must be a string/
+    expect(feather.sessions.list({ user_id: 123 })).to.be.rejectedWith(
+      `expected param 'user_id' to be of type 'string'`
     );
 
-    expect(feather.sessions.list({})).to.be.rejectedWith(
-      /User ID must be a string/
-    );
-
-    expect(feather.sessions.list(null)).to.be.rejectedWith(
-      /User ID must be a string/
+    expect(feather.sessions.list({ user_id: {} })).to.be.rejectedWith(
+      `expected param 'user_id' to be of type 'string'`
     );
   });
 
@@ -112,40 +109,40 @@ describe("sessions resource", function() {
     feather.sessions.retrieve("SES_foo").then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
-        path: "/sessions",
-        data: { id: "SES_foo" }
+        path: "/sessions/SES_foo",
+        data: null
       });
     });
   });
 
   it("[retrieve] should throw error if ID is not a string", function() {
     expect(feather.sessions.retrieve(true)).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.retrieve(123)).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.retrieve({})).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
 
     expect(feather.sessions.retrieve(null)).to.be.rejectedWith(
-      /ID must be a string/
+      `expected param 'id' to be of type 'string'`
     );
   });
 
   it("[revoke] should revoke a session", function() {
     feather._gateway.mockResponse = sampleReponse_revoked;
-    const session = {
-      token: "foo"
+    const data = {
+      session_token: "foo"
     };
-    feather.sessions.revoke("SES_foo", session).then(res => {
+    feather.sessions.revoke("SES_foo", data).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions/SES_foo/revoke",
-        data: { session_token: "foo" }
+        data: data
       });
     });
   });
@@ -168,34 +165,34 @@ describe("sessions resource", function() {
     );
   });
 
-  it("[revoke] should throw error if session is not an object", function() {
-    expect(feather.sessions.revoke("SES_foo", true)).to.be.rejectedWith(
-      /Session must be an object/
+  it("[revoke] should throw error if session_token is not an string", function() {
+    expect(
+      feather.sessions.revoke("SES_foo", { session_token: true })
+    ).to.be.rejectedWith(
+      `expected param 'session_token' to be of type 'string'`
     );
 
-    expect(feather.sessions.revoke("SES_foo", 123)).to.be.rejectedWith(
-      /Session must be an object/
+    expect(
+      feather.sessions.revoke("SES_foo", { session_token: 123 })
+    ).to.be.rejectedWith(
+      `expected param 'session_token' to be of type 'string'`
     );
 
-    expect(feather.sessions.revoke("SES_foo", "")).to.be.rejectedWith(
-      /Session must be an object/
-    );
-
-    expect(feather.sessions.revoke("SES_foo", null)).to.be.rejectedWith(
-      /Session cannot be null/
-    );
+    expect(
+      feather.sessions.revoke("SES_foo", { session_token: null })
+    ).to.be.rejectedWith(`required param not provided: 'session_token'`);
   });
 
   it("[upgrade] should upgrade a session", function() {
     feather._gateway.mockResponse = sampleReponse_authenticated;
-    const credential = {
-      token: "foo"
+    const data = {
+      credential_token: "foo"
     };
-    feather.sessions.upgrade("SES_foo", credential).then(res => {
+    feather.sessions.upgrade("SES_foo", data).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/sessions/SES_foo/upgrade",
-        data: { credential_token: "foo" }
+        data: data
       });
     });
   });
@@ -218,22 +215,22 @@ describe("sessions resource", function() {
     );
   });
 
-  it("[upgrade] should throw error if credential is not an object", function() {
-    expect(feather.sessions.upgrade("SES_foo", true)).to.be.rejectedWith(
-      /Credential must be an object/
+  it("[upgrade] should throw error if credential_token is not an string", function() {
+    expect(
+      feather.sessions.upgrade("SES_foo", { credential_token: true })
+    ).to.be.rejectedWith(
+      `expected param 'credential_token' to be of type 'string'`
     );
 
-    expect(feather.sessions.upgrade("SES_foo", 123)).to.be.rejectedWith(
-      /Credential must be an object/
+    expect(
+      feather.sessions.upgrade("SES_foo", { credential_token: 123 })
+    ).to.be.rejectedWith(
+      `expected param 'credential_token' to be of type 'string'`
     );
 
-    expect(feather.sessions.upgrade("SES_foo", "")).to.be.rejectedWith(
-      /Credential must be an object/
-    );
-
-    expect(feather.sessions.upgrade("SES_foo", null)).to.be.rejectedWith(
-      /Credential cannot be null/
-    );
+    expect(
+      feather.sessions.upgrade("SES_foo", { credential_token: null })
+    ).to.be.rejectedWith(`required param not provided: 'credential_token'`);
   });
 
   it("[validate] should validate a stale session", function() {

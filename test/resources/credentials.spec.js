@@ -37,13 +37,18 @@ describe("credentials resource", function() {
   it("[create] should create a credential", function() {
     feather._gateway.mockResponse = sampleReponse_requiresOneTimeCode;
     feather.credentials
-      .create("email", "foo@bar.com", "baz", "quz")
+      .create({
+        type: credentialTypes.EMAIL,
+        email: "foo@bar.com",
+        username: "baz",
+        password: "quz"
+      })
       .then(res => {
         expect(feather._gateway.LAST_REQUEST).to.deep.equal({
           method: "POST",
           path: "/credentials",
           data: {
-            type: "email",
+            type: credentialTypes.EMAIL,
             email: "foo@bar.com",
             username: "baz",
             password: "quz"
@@ -54,103 +59,132 @@ describe("credentials resource", function() {
 
   it("[create] should throw error if type is not a string", function() {
     expect(
-      feather.credentials.create(true, "foo", "bar", "baz")
-    ).to.be.rejectedWith(/Type must be a string/);
+      feather.credentials.create({
+        type: true,
+        email: "foo",
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`expected param 'type' to be of type 'string'`);
 
     expect(
-      feather.credentials.create(123, "foo", "bar", "baz")
-    ).to.be.rejectedWith(/Type must be a string/);
+      feather.credentials.create({
+        type: 123,
+        email: "foo",
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`expected param 'type' to be of type 'string'`);
 
     expect(
-      feather.credentials.create({}, "foo", "bar", "baz")
-    ).to.be.rejectedWith(/Type must be a string/);
+      feather.credentials.create({
+        type: {},
+        email: "foo",
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`expected param 'type' to be of type 'string'`);
 
     expect(
-      feather.credentials.create(null, "foo", "bar", "baz")
-    ).to.be.rejectedWith(/Type must be a string/);
-  });
-
-  it("[create] should throw error if type is invalid", function() {
-    expect(
-      feather.credentials.create("foo", null, null, null)
-    ).to.be.rejectedWith(/Invalid credential type: foo/);
+      feather.credentials.create({
+        type: null,
+        email: "foo",
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`required param not provided: 'type'`);
   });
 
   it("[create] should throw error if email is not a string", function() {
     expect(
-      feather.credentials.create(credentialTypes.EMAIL, true, "bar", "baz")
-    ).to.be.rejectedWith(/Email must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.EMAIL,
+        email: true,
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(/expected param 'email' to be of type 'string'/);
 
     expect(
-      feather.credentials.create(credentialTypes.EMAIL, 123, "bar", "baz")
-    ).to.be.rejectedWith(/Email must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.EMAIL,
+        email: 123,
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(/expected param 'email' to be of type 'string'/);
 
     expect(
-      feather.credentials.create(credentialTypes.EMAIL, {}, "bar", "baz")
-    ).to.be.rejectedWith(/Email must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.EMAIL,
+        email: {},
+        username: "bar",
+        password: "baz"
+      })
+    ).to.be.rejectedWith(/expected param 'email' to be of type 'string'/);
   });
 
   it("[create] should throw error if username is not a string", function() {
     expect(
-      feather.credentials.create(
-        credentialTypes.USERNAME_PASSWORD,
-        "bar",
-        true,
-        "baz"
-      )
-    ).to.be.rejectedWith(/Username must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.USERNAME_PASSWORD,
+        email: "bar",
+        username: true,
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`expected param 'username' to be of type 'string'`);
 
     expect(
-      feather.credentials.create(
-        credentialTypes.USERNAME_PASSWORD,
-        "bar",
-        123,
-        "baz"
-      )
-    ).to.be.rejectedWith(/Username must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.USERNAME_PASSWORD,
+        email: "bar",
+        username: 123,
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`expected param 'username' to be of type 'string'`);
 
     expect(
-      feather.credentials.create(
-        credentialTypes.USERNAME_PASSWORD,
-        "bar",
-        {},
-        "baz"
-      )
-    ).to.be.rejectedWith(/Username must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.USERNAME_PASSWORD,
+        email: "bar",
+        username: {},
+        password: "baz"
+      })
+    ).to.be.rejectedWith(`expected param 'username' to be of type 'string'`);
   });
 
   it("[create] should throw error if password is not a string", function() {
     expect(
-      feather.credentials.create(
-        credentialTypes.EMAIL_PASSWORD,
-        "bar",
-        "baz",
-        true
-      )
-    ).to.be.rejectedWith(/Password must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.EMAIL_PASSWORD,
+        email: "bar",
+        username: "baz",
+        password: true
+      })
+    ).to.be.rejectedWith(`expected param 'password' to be of type 'string'`);
 
     expect(
-      feather.credentials.create(
-        credentialTypes.EMAIL_PASSWORD,
-        "bar",
-        "baz",
-        123
-      )
-    ).to.be.rejectedWith(/Password must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.EMAIL_PASSWORD,
+        email: "bar",
+        username: "baz",
+        password: 123
+      })
+    ).to.be.rejectedWith(`expected param 'password' to be of type 'string'`);
 
     expect(
-      feather.credentials.create(
-        credentialTypes.EMAIL_PASSWORD,
-        "bar",
-        "baz",
-        {}
-      )
-    ).to.be.rejectedWith(/Password must be a string/);
+      feather.credentials.create({
+        type: credentialTypes.EMAIL_PASSWORD,
+        email: "bar",
+        username: "baz",
+        password: {}
+      })
+    ).to.be.rejectedWith(`expected param 'password' to be of type 'string'`);
   });
 
   it("[update] should update a credential", function() {
     feather._gateway.mockResponse = sampleReponse_valid;
-    feather.credentials.update("foo", "bar").then(res => {
+    feather.credentials.update("foo", { one_time_code: "bar" }).then(res => {
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "POST",
         path: "/credentials/foo",
@@ -162,38 +196,44 @@ describe("credentials resource", function() {
   });
 
   it("[update] should throw error if ID is not a string", function() {
-    expect(feather.credentials.update(true, "foo")).to.be.rejectedWith(
-      /ID must be a string/
-    );
+    expect(
+      feather.credentials.update(true, { one_time_code: "foo" })
+    ).to.be.rejectedWith(`expected param 'id' to be of type 'string'`);
 
-    expect(feather.credentials.update(123, "foo")).to.be.rejectedWith(
-      /ID must be a string/
-    );
+    expect(
+      feather.credentials.update(123, { one_time_code: "foo" })
+    ).to.be.rejectedWith(`expected param 'id' to be of type 'string'`);
 
-    expect(feather.credentials.update({}, "foo")).to.be.rejectedWith(
-      /ID must be a string/
-    );
+    expect(
+      feather.credentials.update({}, { one_time_code: "foo" })
+    ).to.be.rejectedWith(`expected param 'id' to be of type 'string'`);
 
-    expect(feather.credentials.update(null, "foo")).to.be.rejectedWith(
-      /ID must be a string/
-    );
+    expect(
+      feather.credentials.update(null, { one_time_code: "foo" })
+    ).to.be.rejectedWith(`expected param 'id' to be of type 'string'`);
   });
 
-  it("[update] should throw error if oneTimeCode is not a string", function() {
-    expect(feather.credentials.update("foo", true)).to.be.rejectedWith(
-      /OneTimeCode must be a string/
+  it("[update] should throw error if one_time_code is not a string", function() {
+    expect(
+      feather.credentials.update("foo", { one_time_code: true })
+    ).to.be.rejectedWith(
+      `expected param 'one_time_code' to be of type 'string'`
     );
 
-    expect(feather.credentials.update("foo", 123)).to.be.rejectedWith(
-      /OneTimeCode must be a string/
+    expect(
+      feather.credentials.update("foo", { one_time_code: 123 })
+    ).to.be.rejectedWith(
+      `expected param 'one_time_code' to be of type 'string'`
     );
 
-    expect(feather.credentials.update("foo", {})).to.be.rejectedWith(
-      /OneTimeCode must be a string/
+    expect(
+      feather.credentials.update("foo", { one_time_code: {} })
+    ).to.be.rejectedWith(
+      `expected param 'one_time_code' to be of type 'string'`
     );
 
-    expect(feather.credentials.update("foo", null)).to.be.rejectedWith(
-      /OneTimeCode must be a string/
-    );
+    expect(
+      feather.credentials.update("foo", { one_time_code: null })
+    ).to.be.rejectedWith(`required param not provided: 'one_time_code'`);
   });
 });
