@@ -10,4 +10,5 @@ script:
   - yarn cover
 
 # Send coverage data to Coveralls
-after_success: yarn coveralls
+after_script:
+  - COVERALLS_REPO_TOKEN=$coveralls_repo_token yarn coveralls
