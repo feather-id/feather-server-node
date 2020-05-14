@@ -1,17 +1,14 @@
 # Feather Node.js Library
 
-<p float="left">
 [![Build Status](https://travis-ci.org/feather-id/feather-node.svg?branch=master)](https://travis-ci.org/feather-id/feather-node)
 
 [![Coverage Status](https://coveralls.io/repos/github/feather-id/feather-node/badge.svg?branch=master)](https://coveralls.io/github/feather-id/feather-node?branch=master)
-
-</p>
 
 This library provides convenient access to the Feather API for applications running in a Node.js server environment.
 
 ## Installation
 
-```shell
+```sh
 $ npm install feather-id --save
 # or
 $ yarn add feather-id
@@ -21,7 +18,7 @@ $ yarn add feather-id
 
 The package needs to be configured with your project's API keys, available on the [Feather Dashboard](https://feather.id/dashboard). Include the API key when you require the package:
 
-```javascript
+```js
 const feather = require("feather-id")("live_...");
 ```
 
@@ -29,7 +26,7 @@ const feather = require("feather-id")("live_...");
 
 Every method returns a promise:
 
-```javascript
+```js
 feather.credentials
   .create({
     type: "username|password",
@@ -58,7 +55,7 @@ If you do not have `yarn` installed, you can install it with `npm install --glob
 
 Run the tests:
 
-```shell
+```sh
 $ yarn install
 $ yarn test
 ```
