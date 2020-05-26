@@ -55,8 +55,8 @@ describe("users resource", function() {
       expect(res).to.deep.equal(sampleResponse_empty);
       expect(feather._gateway.LAST_REQUEST).to.deep.equal({
         method: "GET",
-        path: "/users",
-        data: { id: "USR_foo" }
+        path: "/users/USR_foo",
+        data: null
       });
     });
   });
