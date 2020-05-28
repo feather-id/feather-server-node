@@ -1,6 +1,6 @@
 {
   "name": "feather-id",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Node.js library for the Feather API",
   "main": "lib/feather.js",
   "scripts": {
