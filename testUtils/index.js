@@ -1,4 +1,5 @@
 const utils = require("../lib/utils");
+const nock = require("nock");
 
 const testUtils = {
   /**
@@ -13,29 +14,29 @@ const testUtils = {
   /**
    * Get a Feather instance which can inspect outgoing gateway requests
    */
-  getSpyableFeather: function() {
-    var f = require("../lib/feather")("fake_api_key");
-    var spyableFeather = utils.copy(f, true);
-
-    function getMockGateway() {
-      const Gateway = require("../lib/gateway");
-      const mg = new Gateway("fake_api_key", {});
-      mg.sendRequest = (method, path, data) => {
-        return new Promise(function(resolve, reject) {
-          mg.LAST_REQUEST = {
-            method: method,
-            path: path,
-            data: data
-          };
-          resolve(mg.mockResponse);
-        });
-      };
-      return mg;
-    }
-
-    spyableFeather._gateway = getMockGateway();
-    return spyableFeather;
-  },
+  // getSpyableFeather: function() {
+  //   var f = require("../lib/feather")("fake_api_key");
+  //   var spyableFeather = utils.copy(f, true);
+  //
+  //   function getMockGateway() {
+  //     const Gateway = require("../lib/gateway");
+  //     const mg = new Gateway("fake_api_key", {});
+  //     mg.sendRequest = (method, path, data) => {
+  //       return new Promise(function(resolve, reject) {
+  //         mg.LAST_REQUEST = {
+  //           method: method,
+  //           path: path,
+  //           data: data
+  //         };
+  //         resolve(mg.mockResponse);
+  //       });
+  //     };
+  //     return mg;
+  //   }
+  //
+  //   spyableFeather._gateway = getMockGateway();
+  //   return spyableFeather;
+  // },
 
   /**
    *
@@ -70,6 +71,18 @@ const testUtils = {
 
       invalidExpiresAt: `eyJhbGciOiJSUzI1NiIsImtpZCI6IjAiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJQUkpfY2RiY2M5ODYtYWU2Ni00NjY2LWI5NDYtMTgyNmNmMGIyYjU3IiwiY2F0IjoxNTg5Mzg1ODQ4LCJleHAiOiJmb28iLCJpYXQiOjE1ODkzODU4NDgsImlzcyI6ImZlYXRoZXIuaWQiLCJqdGkiOiJTeUFmczBlM0lnWWhFVnB1eUdHZWlCMlJGNHI4bkIzemludjlOUW5JUVdPeVpGTUpBTVBjTmhVbU41N2J6dFU3SUdzS2xWdElEZHRmRHBCV2RKTExzUXg4YmtNQmZNZmRSYUNDIiwicmF0IjpudWxsLCJzZXMiOiJTRVNfOTQ2NmVhYWQtYTY0YS00MGE0LTk2YzktZjZhMTlhZGYxYzcyIiwic3ViIjoiVVNSX2E2ODc1YjM0LTQ2ZWEtNDI5ZC04NThjLTNhYTZhMzQzYjUzNCIsInR5cCI6ImF1dGhlbnRpY2F0ZWQifQ.Cekvy-Liu0xYJfirQNMY4upHzOybqmkmWrisXofiIeNbgp2y-_EvrlybsJctroOz9MGhldqPJgoddl3CZseHcvWc3u_vVJDdCoYFsVIMzbJr3hCBmPnHOncLmQy-_Mr-Z5vg4x6r3hgbwn_pWM2iBIPKAccIQzS85vJF4QZnOCgyqn9KfOliyCQOtRIUl4UFZg4gcT7tX4ehhDLPc0uJZTuM0voqznZ1K_txsZRxlXBm5iAaL7bVPgI1dX6qgi5AoGew2B2ghZjxly3RjfaxGctqlXRiU42U_2U9oJDyyWSvCtF0Vjv2xisNwBINcsYDe3aBBH0VZrdh6IRYMwvHlA`
     };
+  },
+
+  getPublicKeyNock: function() {
+    return nock("http://localhost:8080", {
+      reqheaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .get("/v1/publicKeys/0", {})
+      .times(1)
+      .reply(200, testUtils.getFakePublicKey());
   },
 
   /**
