@@ -163,7 +163,6 @@ describe("feather.credentials.update", function() {
   });
 
   it("should update a credential", function() {
-    const data = { verification_code: "foo" };
     const scope = nock("http://localhost:8080", {
       reqHeaders: {
         Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
@@ -173,9 +172,20 @@ describe("feather.credentials.update", function() {
       .post("/v1/credentials/CRD_foo", "verification_code=foo")
       .times(1)
       .reply(200, sampleCredentialValid);
+    const data = { verification_code: "foo" };
     return expect(
       feather.credentials.update("CRD_foo", data)
     ).to.eventually.deep.equal(sampleCredentialValid);
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/credentials/CRD_foo")
+      .replyWithError("boom");
+    const data = { verification_code: "foo" };
+    return expect(
+      feather.credentials.update("CRD_foo", data)
+    ).to.be.rejectedWith("boom");
   });
 });
 
@@ -288,11 +298,6 @@ describe("feather.credentials.create", function() {
   });
 
   it("should create a credential", function() {
-    const data = {
-      type: "username|password",
-      username: "foo",
-      password: "bar"
-    };
     const scope = nock("http://localhost:8080", {
       reqHeaders: {
         Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
@@ -305,9 +310,26 @@ describe("feather.credentials.create", function() {
       )
       .times(1)
       .reply(200, sampleCredentialValid);
+    const data = {
+      type: "username|password",
+      username: "foo",
+      password: "bar"
+    };
     return expect(feather.credentials.create(data)).to.eventually.deep.equal(
       sampleCredentialValid
     );
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/credentials")
+      .replyWithError("boom");
+    const data = {
+      type: "username|password",
+      username: "foo",
+      password: "bar"
+    };
+    return expect(feather.credentials.create(data)).to.be.rejectedWith("boom");
   });
 });
 
@@ -385,7 +407,6 @@ describe("feather.sessions.create", function() {
   });
 
   it("should create an session without credential", function() {
-    const data = { credential_token: null };
     const scope = nock("http://localhost:8080", {
       reqHeaders: {
         Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
@@ -396,9 +417,18 @@ describe("feather.sessions.create", function() {
       .post("/v1/sessions", "credential_token=")
       .times(1)
       .reply(200, sampleSession);
+    const data = { credential_token: null };
     return expect(feather.sessions.create(data)).to.eventually.deep.equal(
       sampleSession
     );
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/sessions")
+      .replyWithError("boom");
+    const data = { credential_token: null };
+    return expect(feather.sessions.create(data)).to.be.rejectedWith("boom");
   });
 });
 
@@ -449,6 +479,14 @@ describe("feather.sessions.list", function() {
       sampleSessionList
     );
   });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .get("/v1/sessions?user_id=foo")
+      .replyWithError("boom");
+    const data = { user_id: "foo" };
+    return expect(feather.sessions.list(data)).to.be.rejectedWith("boom");
+  });
 });
 
 describe("feather.sessions.retrieve", function() {
@@ -486,11 +524,20 @@ describe("feather.sessions.retrieve", function() {
         "Content-Type": "application/x-www-form-urlencoded"
       }
     })
-      .get("/v1/sessions/foo", {})
+      .get("/v1/sessions/SES_foo", {})
       .times(1)
       .reply(200, sampleSession);
-    return expect(feather.sessions.retrieve("foo")).to.eventually.deep.equal(
-      sampleSession
+    return expect(
+      feather.sessions.retrieve("SES_foo")
+    ).to.eventually.deep.equal(sampleSession);
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .get("/v1/sessions/SES_foo")
+      .replyWithError("boom");
+    return expect(feather.sessions.retrieve("SES_foo")).to.be.rejectedWith(
+      "boom"
     );
   });
 });
@@ -554,6 +601,16 @@ describe("feather.sessions.revoke", function() {
       feather.sessions.revoke("SES_foo", data)
     ).to.eventually.deep.equal(sampleSession);
   });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/sessions/SES_foo/revoke", "session_token=foo")
+      .replyWithError("boom");
+    const data = { session_token: "foo" };
+    return expect(feather.sessions.revoke("SES_foo", data)).to.be.rejectedWith(
+      "boom"
+    );
+  });
 });
 
 describe("feather.sessions.upgrade", function() {
@@ -598,6 +655,14 @@ describe("feather.sessions.upgrade", function() {
     expect(feather.sessions.upgrade("SES_foo", data)).to.be.rejectedWith(
       `required param not provided: 'credential_token'`
     );
+
+    expect(feather.sessions.upgrade("SES_foo", null)).to.be.rejectedWith(
+      `required request data not provided`
+    );
+
+    expect(feather.sessions.upgrade("SES_foo", 123)).to.be.rejectedWith(
+      `expected param 'data' to be of type 'object'`
+    );
   });
 
   it("should upgrade a session", function() {
@@ -614,6 +679,16 @@ describe("feather.sessions.upgrade", function() {
     return expect(
       feather.sessions.upgrade("SES_foo", data)
     ).to.eventually.deep.equal(sampleSession);
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/sessions/SES_foo/upgrade", "credential_token=foo")
+      .replyWithError("boom");
+    const data = { credential_token: "foo" };
+    return expect(feather.sessions.upgrade("SES_foo", data)).to.be.rejectedWith(
+      "boom"
+    );
   });
 });
 
@@ -654,18 +729,27 @@ describe("feather.sessions.validate", function() {
     );
   });
 
-  it("should parse a valid token", function() {
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .get("/v1/publicKeys/0")
+      .replyWithError("boom");
     const data = {
       session_token: testUtils.getSampleSessionTokens()["validButStale"]
     };
+    return expect(feather.sessions.validate(data)).to.be.rejectedWith("boom");
+  });
+
+  it("should parse a valid token", function() {
+    const session_token = testUtils.getSampleSessionTokens()["validButStale"];
     const scope = testUtils
       .getPublicKeyNock()
       .post(
         "/v1/sessions/SES_10836cb6-994d-40f6-950c-3617be17b7c3/validate",
-        data
+        "session_token=" + session_token
       )
       .times(1)
       .reply(200, sampleSession);
+    const data = { session_token };
     return feather.sessions.validate(data).then(res => {
       expect(res).to.deep.equal(sampleSession);
       expect(scope.isDone()).to.equal(true);
@@ -751,6 +835,19 @@ describe("feather.sessions.validate", function() {
       "The session token is invalid"
     );
   });
+
+  it("should reject a gateway error", function() {
+    const session_token = testUtils.getSampleSessionTokens()["validButStale"];
+    const scope = testUtils
+      .getPublicKeyNock()
+      .post(
+        "/v1/sessions/SES_10836cb6-994d-40f6-950c-3617be17b7c3/validate",
+        "session_token=" + session_token
+      )
+      .replyWithError("boom");
+    const data = { session_token };
+    return expect(feather.sessions.validate(data)).to.be.rejectedWith("boom");
+  });
 });
 
 // * * * * * Users * * * * * //
@@ -828,6 +925,14 @@ describe("feather.users.list", function() {
       sampleUsersList
     );
   });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .get("/v1/users?limit=123", {})
+      .replyWithError("boom");
+    const data = { limit: 123 };
+    return expect(feather.users.list(data)).to.be.rejectedWith("boom");
+  });
 });
 
 describe("feather.users.retrieve", function() {
@@ -871,6 +976,13 @@ describe("feather.users.retrieve", function() {
     return expect(feather.users.retrieve("USR_foo")).to.eventually.deep.equal(
       sampleUserAnonymous
     );
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .get("/v1/users/USR_foo", {})
+      .replyWithError("boom");
+    return expect(feather.users.retrieve("USR_foo")).to.be.rejectedWith("boom");
   });
 });
 
@@ -968,5 +1080,41 @@ describe("feather.users.update", function() {
     return expect(
       feather.users.update("USR_foo", data)
     ).to.eventually.deep.equal(sampleUserAuthenticated);
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/users/USR_foo")
+      .replyWithError("boom");
+    const data = {
+      username: "foo",
+      email: "foo@bar.com",
+      metadata: { highScore: 101 }
+    };
+    return expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      "boom"
+    );
+  });
+});
+
+// * * * * * Gateway * * * * * //
+
+describe("feather._gateway", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject unparsable response", function() {
+    const scope = nock("http://localhost:8080")
+      .get("/v1/users/USR_foo", {})
+      .reply(200, "!@#$%^");
+    return expect(feather.users.retrieve("USR_foo")).to.be.rejectedWith(
+      "The gateway received an unparsable response with status code 200"
+    );
   });
 });
