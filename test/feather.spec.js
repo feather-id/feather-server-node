@@ -1097,6 +1097,114 @@ describe("feather.users.update", function() {
   });
 });
 
+describe("feather.users.updatePassword", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject invalid input", function() {
+    var data = {};
+    expect(feather.users.updatePassword(true, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = {};
+    expect(feather.users.updatePassword(123, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = {};
+    expect(feather.users.updatePassword({}, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = {};
+    expect(feather.users.updatePassword(null, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = { new_password: "n3w p4ssw0rd" };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `required param not provided: 'credential_token'`
+    );
+
+    var data = { credential_token: 123, new_password: "n3w p4ssw0rd" };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'credential_token' to be of type 'string'`
+    );
+
+    var data = { credential_token: {}, new_password: "n3w p4ssw0rd" };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'credential_token' to be of type 'string'`
+    );
+
+    var data = { credential_token: 123, new_password: "n3w p4ssw0rd" };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'credential_token' to be of type 'string'`
+    );
+
+    var data = { credential_token: "foo" };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `required param not provided: 'new_password'`
+    );
+
+    var data = { credential_token: "foo", new_password: true };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'new_password' to be of type 'string'`
+    );
+
+    var data = { credential_token: "foo", new_password: 123 };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'new_password' to be of type 'string'`
+    );
+
+    var data = { credential_token: "foo", new_password: {} };
+    expect(feather.users.updatePassword("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'new_password' to be of type 'string'`
+    );
+  });
+
+  it("should update a user's password", function() {
+    const scope = nock("http://localhost:8080", {
+      reqHeaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .post(
+        "/v1/users/USR_foo/password",
+        "credential_token=foo&new_password=n3w_p4ssw0rd"
+      )
+      .times(1)
+      .reply(200, sampleUserAuthenticated);
+    const data = {
+      credential_token: "foo",
+      new_password: "n3w_p4ssw0rd"
+    };
+    return expect(
+      feather.users.updatePassword("USR_foo", data)
+    ).to.eventually.deep.equal(sampleUserAuthenticated);
+  });
+
+  it("should reject a gateway error", function() {
+    const scope = nock("http://localhost:8080")
+      .post("/v1/users/USR_foo/password")
+      .replyWithError("boom");
+    const data = {
+      credential_token: "foo",
+      new_password: "n3w_p4ssw0rd"
+    };
+    return expect(
+      feather.users.updatePassword("USR_foo", data)
+    ).to.be.rejectedWith("boom");
+  });
+});
+
 // * * * * * Gateway * * * * * //
 
 describe("feather._gateway", function() {
