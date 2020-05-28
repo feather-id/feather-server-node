@@ -12,33 +12,6 @@ const testUtils = {
   },
 
   /**
-   * Get a Feather instance which can inspect outgoing gateway requests
-   */
-  // getSpyableFeather: function() {
-  //   var f = require("../lib/feather")("fake_api_key");
-  //   var spyableFeather = utils.copy(f, true);
-  //
-  //   function getMockGateway() {
-  //     const Gateway = require("../lib/gateway");
-  //     const mg = new Gateway("fake_api_key", {});
-  //     mg.sendRequest = (method, path, data) => {
-  //       return new Promise(function(resolve, reject) {
-  //         mg.LAST_REQUEST = {
-  //           method: method,
-  //           path: path,
-  //           data: data
-  //         };
-  //         resolve(mg.mockResponse);
-  //       });
-  //     };
-  //     return mg;
-  //   }
-  //
-  //   spyableFeather._gateway = getMockGateway();
-  //   return spyableFeather;
-  // },
-
-  /**
    *
    */
   getSampleSessionTokens: function() {
