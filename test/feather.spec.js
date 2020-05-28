@@ -752,3 +752,221 @@ describe("feather.sessions.validate", function() {
     );
   });
 });
+
+// * * * * * Users * * * * * //
+
+const sampleUserAnonymous = {
+  id: "USR_e4e9bc4c-19c8-4da9-9eb3-4553d4bd37a6",
+  object: "user",
+  email: null,
+  username: null,
+  is_email_verified: false,
+  is_anonymous: true,
+  metadata: `{}`,
+  created_at: "2020-05-13T19:41:45.566791Z",
+  updated_at: "2020-05-13T19:41:45.566791Z"
+};
+
+const sampleUserAuthenticated = {
+  id: "USR_e2969a70-bcde-4e63-a1b6-e479a0c20fb4",
+  object: "user",
+  email: "foo@bar.com",
+  username: "foo",
+  is_email_verified: false,
+  is_anonymous: false,
+  metadata: `{"highScore": "123"}`,
+  created_at: "2020-05-13T19:41:45.566791Z",
+  updated_at: "2020-05-13T19:41:45.566791Z"
+};
+
+const sampleUsersList = {
+  object: "list",
+  has_more: false,
+  url: "/foo",
+  data: [sampleUserAnonymous, sampleUserAuthenticated]
+};
+
+describe("feather.users.list", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject invalid input", function() {
+    var data = { limit: "foo" };
+    expect(feather.users.list(data)).to.be.rejectedWith(
+      `expected param 'limit' to be of type 'number'`
+    );
+
+    var data = { limit: true };
+    expect(feather.users.list(data)).to.be.rejectedWith(
+      `expected param 'limit' to be of type 'number'`
+    );
+
+    var data = { limit: {} };
+    expect(feather.users.list(data)).to.be.rejectedWith(
+      `expected param 'limit' to be of type 'number'`
+    );
+  });
+
+  it("should list users", function() {
+    const scope = nock("http://localhost:8080", {
+      reqHeaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .get("/v1/users?limit=123", {})
+      .times(1)
+      .reply(200, sampleUsersList);
+    const data = { limit: 123 };
+    return expect(feather.users.list(data)).to.eventually.deep.equal(
+      sampleUsersList
+    );
+  });
+});
+
+describe("feather.users.retrieve", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject invalid input", function() {
+    expect(feather.users.retrieve(true)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    expect(feather.users.retrieve(123)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    expect(feather.users.retrieve({})).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    expect(feather.users.retrieve(null)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+  });
+
+  it("should retrieve a user", function() {
+    const scope = nock("http://localhost:8080", {
+      reqHeaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .get("/v1/users/USR_foo", {})
+      .times(1)
+      .reply(200, sampleUserAnonymous);
+    return expect(feather.users.retrieve("USR_foo")).to.eventually.deep.equal(
+      sampleUserAnonymous
+    );
+  });
+});
+
+describe("feather.users.update", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject invalid input", function() {
+    var data = {};
+    expect(feather.users.update(true, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = {};
+    expect(feather.users.update(123, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = {};
+    expect(feather.users.update({}, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = {};
+    expect(feather.users.update(null, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = { username: true };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'username' to be of type 'string'`
+    );
+
+    var data = { username: 123 };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'username' to be of type 'string'`
+    );
+
+    var data = { username: {} };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'username' to be of type 'string'`
+    );
+
+    var data = { email: true };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'email' to be of type 'string'`
+    );
+    var data = { email: 123 };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'email' to be of type 'string'`
+    );
+    var data = { email: {} };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'email' to be of type 'string'`
+    );
+
+    var data = { metadata: true };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'metadata' to be of type 'object'`
+    );
+    var data = { metadata: 123 };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'metadata' to be of type 'object'`
+    );
+    var data = { metadata: "foo" };
+    expect(feather.users.update("USR_foo", data)).to.be.rejectedWith(
+      `expected param 'metadata' to be of type 'object'`
+    );
+  });
+
+  it("should update a user", function() {
+    const scope = nock("http://localhost:8080", {
+      reqHeaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .post(
+        "/v1/users/USR_foo",
+        "username=foo&email=foo%40bar.com&metadata%5BhighScore%5D=101"
+      )
+      .times(1)
+      .reply(200, sampleUserAuthenticated);
+    const data = {
+      username: "foo",
+      email: "foo@bar.com",
+      metadata: { highScore: 101 }
+    };
+    return expect(
+      feather.users.update("USR_foo", data)
+    ).to.eventually.deep.equal(sampleUserAuthenticated);
+  });
+});
