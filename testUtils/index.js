@@ -75,7 +75,7 @@ const testUtils = {
 
   getPublicKeyNock: function() {
     return nock("http://localhost:8080", {
-      reqheaders: {
+      reqHeaders: {
         Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
         "Content-Type": "application/x-www-form-urlencoded"
       }
