@@ -100,6 +100,217 @@ describe("feather constructor", function() {
   });
 });
 
+// * * * * * Credentials * * * * * //
+
+const sampleCredetialRequiresVerificationCode = {
+  id: "CRD_fd881d84-537f-455c-a086-9508b917cd8c",
+  object: "credential",
+  created_at: "2020-01-01T15:44:00.939855294Z",
+  expires_at: "2020-01-01T15:59:00.939855294Z",
+  status: "requires_verification_code",
+  token: null,
+  type: "email"
+};
+
+const sampleCredentialValid = {
+  id: "CRD_fd881d84-537f-455c-a086-9508b917cd8c",
+  object: "credential",
+  created_at: "2020-01-01T15:44:00.939855294Z",
+  expires_at: "2020-01-01T15:59:00.939855294Z",
+  status: "valid",
+  token: "foo",
+  type: "email"
+};
+
+describe("feather.credentials.update", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject invalid input", function() {
+    var data = { verification_code: "foo" };
+    expect(feather.credentials.update(123, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    expect(feather.credentials.update(true, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    expect(feather.credentials.update({}, data)).to.be.rejectedWith(
+      `expected param 'id' to be of type 'string'`
+    );
+
+    var data = { verification_code: 123 };
+    expect(feather.credentials.update("CRD_foo", data)).to.be.rejectedWith(
+      `expected param 'verification_code' to be of type 'string'`
+    );
+
+    var data = { verification_code: true };
+    expect(feather.credentials.update("CRD_foo", data)).to.be.rejectedWith(
+      `expected param 'verification_code' to be of type 'string'`
+    );
+
+    var data = { verification_code: {} };
+    expect(feather.credentials.update("CRD_foo", data)).to.be.rejectedWith(
+      `expected param 'verification_code' to be of type 'string'`
+    );
+  });
+
+  it("should update a credential", function() {
+    const data = { verification_code: "foo" };
+    const scope = nock("http://localhost:8080", {
+      reqHeaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .post("/v1/credentials/CRD_foo", "verification_code=foo")
+      .times(1)
+      .reply(200, sampleCredentialValid);
+    return expect(
+      feather.credentials.update("CRD_foo", data)
+    ).to.eventually.deep.equal(sampleCredentialValid);
+  });
+});
+
+describe("feather.credentials.create", function() {
+  beforeEach(function() {
+    nock.disableNetConnect();
+  });
+
+  afterEach(function() {
+    nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  it("should reject invalid input", function() {
+    var data = { type: 123 };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'type' to be of type 'string'`
+    );
+
+    var data = { type: true };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'type' to be of type 'string'`
+    );
+
+    var data = { type: {} };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'type' to be of type 'string'`
+    );
+
+    var data = {
+      type: "email|password",
+      email: 123,
+      password: "p4ssw0rd"
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'email' to be of type 'string'`
+    );
+
+    var data = {
+      type: "email|password",
+      email: true,
+      password: "p4ssw0rd"
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'email' to be of type 'string'`
+    );
+
+    var data = {
+      type: "email|password",
+      email: {},
+      password: "p4ssw0rd"
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'email' to be of type 'string'`
+    );
+
+    var data = {
+      type: "username|password",
+      username: 123,
+      password: "p4ssw0rd"
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'username' to be of type 'string'`
+    );
+
+    var data = {
+      type: "username|password",
+      username: true,
+      password: "p4ssw0rd"
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'username' to be of type 'string'`
+    );
+
+    var data = {
+      type: "username|password",
+      username: {},
+      password: "p4ssw0rd"
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'username' to be of type 'string'`
+    );
+
+    var data = {
+      type: "email|password",
+      email: "foo@bar.com",
+      password: 123
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'password' to be of type 'string'`
+    );
+
+    var data = {
+      type: "email|password",
+      email: "foo@bar.com",
+      password: true
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'password' to be of type 'string'`
+    );
+
+    var data = {
+      type: "email|password",
+      email: "foo@bar.com",
+      password: {}
+    };
+    expect(feather.credentials.create(data)).to.be.rejectedWith(
+      `expected param 'password' to be of type 'string'`
+    );
+  });
+
+  it("should create a credential", function() {
+    const data = {
+      type: "username|password",
+      username: "foo",
+      password: "bar"
+    };
+    const scope = nock("http://localhost:8080", {
+      reqHeaders: {
+        Authorization: "Basic dGVzdF9sYUNaR1lmYURSZU5td2tsWnNmSXJUc0ZhNW5WaDk6",
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+      .post(
+        "/v1/credentials",
+        "type=username%7Cpassword&username=foo&password=bar"
+      )
+      .times(1)
+      .reply(200, sampleCredentialValid);
+    return expect(feather.credentials.create(data)).to.eventually.deep.equal(
+      sampleCredentialValid
+    );
+  });
+});
+
 // * * * * * Sessions * * * * * //
 
 const sampleSession = {
