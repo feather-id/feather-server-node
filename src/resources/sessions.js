@@ -1,9 +1,11 @@
 "use strict";
 
 const utils = require("../utils");
-const FeatherError = require("../errors/featherError");
-const ErrorType = require("../errors/errorType");
-const ErrorCode = require("../errors/errorCode");
+const {
+  FeatherError,
+  FeatherErrorType,
+  FeatherErrorCode
+} = require("../errors");
 
 const sessions = {
   _gateway: null,
@@ -94,8 +96,8 @@ const sessions = {
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );
@@ -114,62 +116,47 @@ const sessions = {
   /**
    * Revokes a session
    * @arg id
-   * @arg { sessionToken }
    * @return session
    */
-  revoke: function(id, data) {
+  revoke: function(id) {
     const that = this;
     return new Promise(function(resolve, reject) {
       // Validate input
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );
-        return;
-      }
-      try {
-        utils.validateData(data, {
-          isRequired: true,
-          params: {
-            sessionToken: {
-              type: "string",
-              isRequired: true
-            }
-          }
-        });
-      } catch (error) {
-        reject(error);
         return;
       }
 
       // Send request
       const path = "/sessions/" + id + "/revoke";
       that._gateway
-        .sendRequest("POST", path, data)
+        .sendRequest("POST", path, null)
         .then(res => resolve(res))
         .catch(err => reject(err));
     });
   },
 
   /**
-   * Upgrades a session
+   * Updates a session
    * @arg id
    * @arg { credentialToken }
    * @return session
    */
-  upgrade: function(id, data) {
+  update: function(id, data) {
     const that = this;
     return new Promise(function(resolve, reject) {
       // Validate input
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );
@@ -191,7 +178,7 @@ const sessions = {
       }
 
       // Send request
-      const path = "/sessions/" + id + "/upgrade";
+      const path = "/sessions/" + id;
       that._gateway
         .sendRequest("POST", path, data)
         .then(res => resolve(res))
@@ -201,10 +188,10 @@ const sessions = {
 
   /**
    * Validates a session token
-   * @arg { sessionToken }
+   * @arg sessionToken
    * @return session
    */
-  validate: function(data) {
+  validate: function(sessionToken) {
     const that = this;
 
     /**
@@ -236,38 +223,21 @@ const sessions = {
 
     return new Promise(function(resolve, reject) {
       // Validate input
-      try {
-        utils.validateData(data, {
-          isRequired: true,
-          params: {
-            sessionToken: {
-              type: "string",
-              isRequired: true
-            }
-          }
-        });
-      } catch (error) {
-        reject(error);
+      if (typeof sessionToken !== "string") {
+        reject(
+          new FeatherError({
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
+            message: `expected param 'sessionToken' to be of type 'string'`
+          })
+        );
         return;
       }
 
       // Parse token locally
       that
-        ._parseToken(data.sessionToken, getPublicKey)
-        .then(session => {
-          // If session is active, just resolve
-          if (session.status === "active") {
-            resolve(session);
-            return;
-          }
-
-          // Send request
-          const path = "/sessions/" + session.id + "/validate";
-          that._gateway
-            .sendRequest("POST", path, data)
-            .then(res => resolve(res))
-            .catch(err => reject(err));
-        })
+        ._parseToken(sessionToken, getPublicKey)
+        .then(session => resolve(session))
         .catch(err => reject(err));
     });
   }

@@ -2,9 +2,11 @@
 
 const querystring = require("querystring");
 const utils = require("./utils");
-const FeatherError = require("./errors/featherError");
-const ErrorType = require("./errors/errorType");
-const ErrorCode = require("./errors/errorCode");
+const {
+  FeatherError,
+  FeatherErrorType,
+  FeatherErrorCode
+} = require("./errors");
 
 const DEFAULT_PROTOCOL = "https";
 const DEFAULT_HOST = "api.feather.id";
@@ -94,7 +96,7 @@ Gateway.prototype = {
           } catch (e) {
             reject(
               new FeatherError({
-                type: ErrorType.API,
+                type: FeatherErrorType.API,
                 message:
                   "The gateway received an unparsable response with status code " +
                   res.statusCode
@@ -109,7 +111,7 @@ Gateway.prototype = {
       req.on("error", err =>
         reject(
           new FeatherError({
-            type: ErrorType.API_CONNECTION,
+            type: FeatherErrorType.API_CONNECTION,
             message: err.message
           })
         )

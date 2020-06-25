@@ -1,15 +1,15 @@
 # Feather Node.js Library
 
-![npm](https://img.shields.io/npm/v/feather-id?color=5c70d6) [![Build Status](https://travis-ci.org/feather-id/feather-node.svg?branch=master)](https://travis-ci.org/feather-id/feather-node) [![Coverage Status](https://coveralls.io/repos/github/feather-id/feather-node/badge.svg?branch=master)](https://coveralls.io/github/feather-id/feather-node?branch=master)
+![npm](https://img.shields.io/npm/v/feather-id?color=5c70d6)
 
 This library provides a convenient interface to the Feather API for applications running in a Node.js server environment.
 
 ## Installation
 
 ```sh
-$ npm install feather-id --save
+$ npm install feather-server-node --save
 # or
-$ yarn add feather-id
+$ yarn add feather-server-node
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ $ yarn add feather-id
 The Feather package must be initialized with your project's API key, available on the [Feather Dashboard](https://feather.id/dashboard). Include the API key when you require the package:
 
 ```js
-const feather = require("feather-id")("live_...");
+const feather = require("feather-server-node")("live_...");
 ```
 
 ### Using Promises

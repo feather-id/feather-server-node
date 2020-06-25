@@ -1,16 +1,23 @@
 "use strict";
 
 var jws = require("jws");
-const FeatherError = require("./errors/featherError");
-const ErrorType = require("./errors/errorType");
-const ErrorCode = require("./errors/errorCode");
+const {
+  FeatherError,
+  FeatherErrorType,
+  FeatherErrorCode
+} = require("./errors");
 
 function parseToken(tokenString, getPublicKey) {
   return new Promise(function(resolve, reject) {
     const invalidTokenError = new FeatherError({
-      type: ErrorType.VALIDATION,
-      code: ErrorCode.SESSION_TOKEN_INVALID,
+      type: FeatherErrorType.VALIDATION,
+      code: FeatherErrorCode.TOKEN_INVALID,
       message: "The session token is invalid"
+    });
+    const expiredTokenError = new FeatherError({
+      type: FeatherErrorType.VALIDATION,
+      code: FeatherErrorCode.TOKEN_EXPIRED,
+      message: "The session token is expired"
     });
 
     // Parse the token
@@ -67,18 +74,16 @@ function parseToken(tokenString, getPublicKey) {
         }
 
         // TODO Give buffer for clock skew?
-        var sessionStatus = "active";
         const now = Math.floor(Date.now() / 1000);
         if (now > parsedToken.payload.exp) {
-          sessionStatus = "stale";
+          reject(expiredTokenError);
+          return;
         }
-
-        // TODO check the last_refreshed_at date
 
         const session = {
           id: parsedToken.payload.ses,
           object: "session",
-          status: sessionStatus,
+          status: "active",
           token: tokenString,
           userId: parsedToken.payload.sub,
           createdAt: parsedToken.payload.cat,

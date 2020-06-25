@@ -1,17 +1,18 @@
 "use strict";
 
-const credentialTypes = require("../credentialTypes");
 const utils = require("../utils");
-const FeatherError = require("../errors/featherError");
-const ErrorType = require("../errors/errorType");
-const ErrorCode = require("../errors/errorCode");
+const {
+  FeatherError,
+  FeatherErrorType,
+  FeatherErrorCode
+} = require("../errors");
 
 const credentials = {
   _gateway: null,
 
   /**
    * Creates a credential
-   * @arg { type, email, username, password }
+   * @arg { email, username, password, verificationUrl, templateName }
    * @return credential
    */
   create: function(data) {
@@ -22,17 +23,13 @@ const credentials = {
         utils.validateData(data, {
           isRequired: false,
           params: {
-            type: {
-              type: "string",
-              isRequired: true
-            },
             email: {
               type: "string"
             },
-            username: {
+            password: {
               type: "string"
             },
-            password: {
+            redirectUrl: {
               type: "string"
             },
             templateName: {
@@ -56,7 +53,7 @@ const credentials = {
   /**
    * Updates a credential
    * @arg id
-   * @arg { one_time_code }
+   * @arg { verificationCode }
    * @return the updated credential
    */
   update: function(id, data) {
@@ -66,8 +63,8 @@ const credentials = {
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );

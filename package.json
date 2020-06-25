@@ -1,8 +1,8 @@
 {
-  "name": "feather-id",
-  "version": "0.1.16",
+  "name": "feather-server-node",
+  "version": "0.1.17",
   "description": "Node.js library for the Feather API",
-  "main": "lib/feather.js",
+  "main": "src/feather.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec 'test/**/*.spec.js'",
     "cover": "./node_modules/.bin/nyc --reporter=lcov --reporter=text ./node_modules/.bin/mocha 'test/**/*.spec.js' --all --timeout 30000 --exit",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/feather-id/feather-node.git"
+    "url": "git+https://github.com/feather-id/feather-server-node.git"
   },
   "keywords": [
     "authentication",
@@ -22,9 +22,9 @@
   "author": "Feather <hello@feather.id> (https://feather.id)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/feather-id/feather-node/issues"
+    "url": "https://github.com/feather-id/feather-server-node/issues"
   },
-  "homepage": "https://github.com/feather-id/feather-node#readme",
+  "homepage": "https://github.com/feather-id/feather-server-node#readme",
   "engines": {
     "node": ">=4.2.4"
   },

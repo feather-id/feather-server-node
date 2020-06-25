@@ -1,9 +1,11 @@
 "use strict";
 
 const utils = require("../utils");
-const FeatherError = require("../errors/featherError");
-const ErrorType = require("../errors/errorType");
-const ErrorCode = require("../errors/errorCode");
+const {
+  FeatherError,
+  FeatherErrorType,
+  FeatherErrorCode
+} = require("../errors");
 
 const users = {
   _gateway: null,
@@ -57,8 +59,8 @@ const users = {
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );
@@ -77,7 +79,7 @@ const users = {
   /**
    * Updates a user
    * @arg id
-   * @arg { email, username, metadata }
+   * @arg { metadata }
    * @return user
    */
   update: function(id, data) {
@@ -87,8 +89,8 @@ const users = {
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );
@@ -98,12 +100,6 @@ const users = {
         utils.validateData(data, {
           isRequired: true,
           params: {
-            email: {
-              type: "string"
-            },
-            username: {
-              type: "string"
-            },
             metadata: {
               type: "object"
             }
@@ -122,6 +118,54 @@ const users = {
   },
 
   /**
+   * Updates a user's email
+   * @arg id
+   * @arg { credentialToken, newEmail }
+   * @return user
+   */
+  updateEmail: function(id, data) {
+    const that = this;
+    return new Promise(function(resolve, reject) {
+      // Validate input
+      if (typeof id !== "string") {
+        reject(
+          new FeatherError({
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
+            message: `expected param 'id' to be of type 'string'`
+          })
+        );
+        return;
+      }
+      try {
+        utils.validateData(data, {
+          isRequired: true,
+          params: {
+            credentialToken: {
+              type: "string",
+              isRequired: true
+            },
+            newEmail: {
+              type: "string",
+              isRequired: true
+            }
+          }
+        });
+      } catch (error) {
+        reject(error);
+        return;
+      }
+
+      // Send request
+      const path = "/users/" + id + "/email";
+      that._gateway
+        .sendRequest("POST", path, data)
+        .then(res => resolve(res))
+        .catch(err => reject(err));
+    });
+  },
+
+  /**
    * Updates a user's password
    * @arg id
    * @arg { credentialToken, newPassword }
@@ -134,8 +178,8 @@ const users = {
       if (typeof id !== "string") {
         reject(
           new FeatherError({
-            type: ErrorType.VALIDATION,
-            code: ErrorCode.PARAMETER_INVALID,
+            type: FeatherErrorType.VALIDATION,
+            code: FeatherErrorCode.PARAMETER_INVALID,
             message: `expected param 'id' to be of type 'string'`
           })
         );
