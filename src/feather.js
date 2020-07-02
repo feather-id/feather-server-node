@@ -3,6 +3,7 @@
 const gateway = require("./gateway");
 const resources = require("./resources");
 const utils = require("./utils");
+const idTokenValidator = require("./idTokenValidator.js");
 const {
   FeatherError,
   FeatherErrorType,
@@ -33,6 +34,11 @@ function Feather(apiKey, config = {}) {
 }
 
 Feather.prototype = {
+  validateIDToken(idToken) {
+    idTokenValidator._gateway = this._gateway;
+    return idTokenValidator.validateIDToken(idToken);
+  },
+
   /**
    * @private
    * This may be removed in the future.
