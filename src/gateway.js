@@ -19,7 +19,7 @@ function Gateway(apiKey, config = {}) {
   }
 
   this._api = {
-    auth: "Basic " + Buffer.from(apiKey + ":").toString("base64"),
+    key: apiKey,
     host: config.host || DEFAULT_HOST,
     port: config.port || DEFAULT_PORT,
     protocol: config.protocol || DEFAULT_PROTOCOL,
@@ -33,7 +33,7 @@ Gateway.prototype = {
     return new Promise(function(resolve, reject) {
       // Build headers
       var headers = {
-        Authorization: that._api.auth,
+        "X-API-Key": that._api.key,
         "Content-Type": "application/x-www-form-urlencoded"
       };
 

@@ -83,6 +83,7 @@ const tokenValidator = {
         ._getPublicKey(parsedToken.header.kid)
         .then(pubKey => {
           // Verify signature
+
           try {
             const isValid = jws.verify(tokenString, rs256, pubKey.pem);
             if (!isValid) {
@@ -95,7 +96,7 @@ const tokenValidator = {
           }
 
           // Verify claims
-          if (parsedToken.payload.iss !== "feather.id") {
+          if (parsedToken.payload.iss !== "feather") {
             reject(invalidTokenError);
             return;
           }
