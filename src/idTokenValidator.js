@@ -9,34 +9,63 @@ const {
 
 const tokenValidator = {
   _gateway: null,
-  _cachedPublicKeys: {},
+  _cachedJWKs: {},
+  _cachedAudience: null,
+
+  /**
+   * @private
+   * This may be removed in the future.
+   */
+  _getAudience: function() {
+    const that = this;
+    return new Promise(function(resolve, reject) {
+      // Check the cache
+      if (that._cachedAudience) {
+        resolve(that._cachedAudience);
+        return;
+      }
+
+      // Send request
+      var path = "/.well-known/aud";
+      that._gateway
+        .sendRequest("GET", path, null)
+        .then(aud => {
+          // Cache the audience
+          that._cachedAudience = aud.aud;
+          resolve(aud.aud);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  },
 
   /**
    * @private
    * This may be removed in the future.
    *
-   * Retrieves a public key
+   * Retrieves a public JWK
    * @arg id
-   * @return publicKey
+   * @return jwk
    */
-  _getPublicKey: function(id) {
+  _getJWK: function(id) {
     const that = this;
     return new Promise(function(resolve, reject) {
       // Check the cache
-      const pubKey = that._cachedPublicKeys[id];
-      if (!!pubKey) {
-        resolve(pubKey);
+      const jwk = that._cachedJWKs[id];
+      if (!!jwk) {
+        resolve(jwk);
         return;
       }
 
       // Send request
-      var path = "/publicKeys/" + id;
+      var path = `/.well-known/jwks/${id}.json`;
       that._gateway
         .sendRequest("GET", path, null)
-        .then(pubKey => {
+        .then(jwk => {
           // Cache the key
-          that._cachedPublicKeys[id] = pubKey;
-          resolve(pubKey);
+          that._cachedJWKs[id] = jwk;
+          resolve(jwk);
         })
         .catch(err => {
           reject(err);
@@ -80,12 +109,13 @@ const tokenValidator = {
 
       // Check cache for the key
       that
-        ._getPublicKey(parsedToken.header.kid)
-        .then(pubKey => {
+        ._getJWK(parsedToken.header.kid)
+        .then(jwk => Promise.all([jwk, that._getAudience()]))
+        .then(([jwk, audience]) => {
           // Verify signature
 
           try {
-            const isValid = jws.verify(tokenString, rs256, pubKey.pem);
+            const isValid = jws.verify(tokenString, rs256, jwk.pem);
             if (!isValid) {
               reject(invalidTokenError);
               return;
@@ -104,14 +134,11 @@ const tokenValidator = {
             reject(invalidTokenError);
             return;
           }
-          if (parsedToken.payload.aud.substring(0, 4) !== "PRJ_") {
+
+          if (parsedToken.payload.aud !== audience) {
             reject(invalidTokenError);
             return;
           }
-
-          // ***IMPORTANT***
-          // TODO Validate *my* project is the audience
-          // Otherwise any old Feather token can make it through here.
 
           // TODO Give buffer for clock skew?
           const now = Math.floor(Date.now() / 1000);
