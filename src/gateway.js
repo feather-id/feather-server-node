@@ -28,11 +28,12 @@ function Gateway(apiKey, config = {}) {
 }
 
 Gateway.prototype = {
-  sendRequest(method, path, data) {
+  sendRequest(method, path, data, headers) {
     const that = this;
     return new Promise(function(resolve, reject) {
       // Build headers
       var headers = {
+        ...headers,
         Authorization: that._api.basicAuth,
         "Content-Type": "application/x-www-form-urlencoded"
       };

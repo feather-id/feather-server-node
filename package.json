@@ -2,7 +2,7 @@
   "name": "feather-server-node",
   "version": "0.1.17",
   "description": "Node.js library for the Feather API",
-  "main": "src/feather.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec 'test/**/*.spec.js'",
     "cover": "./node_modules/.bin/nyc --reporter=lcov --reporter=text ./node_modules/.bin/mocha 'test/**/*.spec.js' --all --timeout 30000 --exit",

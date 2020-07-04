@@ -7,7 +7,7 @@ const {
   FeatherErrorCode
 } = require("./errors");
 
-const tokenValidator = {
+const idTokenVerifier = {
   _gateway: null,
   _cachedJWKs: {},
   _cachedAudience: null,
@@ -73,7 +73,7 @@ const tokenValidator = {
     });
   },
 
-  validateIDToken: function(tokenString, getPublicKey) {
+  verifyIdToken: function(tokenStr) {
     const that = this;
     return new Promise(function(resolve, reject) {
       const invalidTokenError = new FeatherError({
@@ -87,35 +87,35 @@ const tokenValidator = {
         message: "The session token is expired"
       });
 
-      // Parse the token
-      const parsedToken = jws.decode(tokenString);
-      if (!parsedToken) {
+      // Decode the token
+      const decodedToken = jws.decode(tokenStr);
+      if (!decodedToken) {
         reject(invalidTokenError);
         return;
       }
 
       // Verify signature algorithm
       const rs256 = "RS256";
-      if (parsedToken.header.alg != rs256) {
+      if (decodedToken.header.alg != rs256) {
         reject(invalidTokenError);
         return;
       }
 
       // Get the key ID
-      if (!parsedToken.header.kid) {
+      if (!decodedToken.header.kid) {
         reject(invalidTokenError);
         return;
       }
 
       // Check cache for the key
       that
-        ._getJWK(parsedToken.header.kid)
+        ._getJWK(decodedToken.header.kid)
         .then(jwk => Promise.all([jwk, that._getAudience()]))
         .then(([jwk, audience]) => {
           // Verify signature
 
           try {
-            const isValid = jws.verify(tokenString, rs256, jwk.pem);
+            const isValid = jws.verify(tokenStr, rs256, jwk.pem);
             if (!isValid) {
               reject(invalidTokenError);
               return;
@@ -126,30 +126,29 @@ const tokenValidator = {
           }
 
           // Verify claims
-          if (parsedToken.payload.iss !== "feather") {
+          if (decodedToken.payload.iss !== "feather") {
             reject(invalidTokenError);
             return;
           }
-          if (parsedToken.payload.sub.substring(0, 4) !== "USR_") {
+          if (decodedToken.payload.sub.substring(0, 4) !== "USR_") {
             reject(invalidTokenError);
             return;
           }
-
-          if (parsedToken.payload.aud !== audience) {
+          if (decodedToken.payload.aud !== audience) {
             reject(invalidTokenError);
             return;
           }
 
           // TODO Give buffer for clock skew?
           const now = Math.floor(Date.now() / 1000);
-          if (now > parsedToken.payload.exp) {
+          if (now > decodedToken.payload.exp) {
             reject(expiredTokenError);
             return;
           }
 
           // Return the parsed user
           const user = {
-            id: parsedToken.payload.sub,
+            id: decodedToken.payload.sub,
             object: "user"
           };
           resolve(user);
@@ -159,4 +158,4 @@ const tokenValidator = {
   }
 };
 
-module.exports = tokenValidator;
+module.exports = idTokenVerifier;

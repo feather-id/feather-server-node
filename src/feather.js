@@ -3,7 +3,7 @@
 const gateway = require("./gateway");
 const resources = require("./resources");
 const utils = require("./utils");
-const idTokenValidator = require("./idTokenValidator.js");
+const idTokenVerifier = require("./idTokenVerifier");
 const {
   FeatherError,
   FeatherErrorType,
@@ -29,14 +29,14 @@ function Feather(apiKey, config = {}) {
 
   // Initialize the SDK
   this._gateway = new gateway(apiKey, config);
+  idTokenVerifier._gateway = this._gateway;
   this._prepareResources();
   return this;
 }
 
 Feather.prototype = {
-  validateIDToken(idToken) {
-    idTokenValidator._gateway = this._gateway;
-    return idTokenValidator.validateIDToken(idToken);
+  verifyIdToken(idToken) {
+    return idTokenVerifier.verifyIdToken(idToken);
   },
 
   /**

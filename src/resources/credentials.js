@@ -12,7 +12,7 @@ const credentials = {
 
   /**
    * Creates a credential
-   * @arg { email, username, password, verificationUrl, templateName }
+   * @arg { email, password, redirectUrl, templateName }
    * @return credential
    */
   create: function(data) {
@@ -43,8 +43,9 @@ const credentials = {
       }
 
       // Send request
+      const path = "/credentials";
       that._gateway
-        .sendRequest("POST", "/credentials", data)
+        .sendRequest("POST", path, data)
         .then(res => resolve(res))
         .catch(err => reject(err));
     });
