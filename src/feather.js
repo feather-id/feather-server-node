@@ -29,16 +29,16 @@ function Feather(apiKey, config = {}) {
 
   // Initialize the SDK
   this._gateway = new gateway(apiKey, config);
-  idTokenVerifier._gateway = this._gateway;
   this._prepareResources();
+  idTokenVerifier._gateway = this._gateway;
+  this.verifyIdToken = function(idToken) {
+    return idTokenVerifier.verifyIdToken(idToken);
+  };
+
   return this;
 }
 
 Feather.prototype = {
-  verifyIdToken(idToken) {
-    return idTokenVerifier.verifyIdToken(idToken);
-  },
-
   /**
    * @private
    * This may be removed in the future.
