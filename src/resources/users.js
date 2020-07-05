@@ -36,7 +36,7 @@ const users = {
 
       // Send request
       const path = "/users";
-      that._httpGateway
+      that._gateway
         .sendRequest("POST", path, null, headers)
         .then(res => resolve(res))
         .catch(err => reject(err));
@@ -197,6 +197,7 @@ const users = {
 
       // Send request
       const path = "/users/" + id + "/email";
+      const data = { newEmail };
       that._gateway
         .sendRequest("POST", path, data, headers)
         .then(res => resolve(res))
@@ -248,8 +249,9 @@ const users = {
 
       // Send request
       const path = "/users/" + id + "/password";
+      const data = { newPassword };
       that._gateway
-        .sendRequest("POST", path, data)
+        .sendRequest("POST", path, data, headers)
         .then(res => resolve(res))
         .catch(err => reject(err));
     });
@@ -289,7 +291,7 @@ const users = {
 
       // Send request
       const path = `/users/${id}/tokens`;
-      that._httpGateway
+      that._gateway
         .sendRequest("POST", path, null, headers)
         .then(res => resolve(res))
         .catch(err => reject(err));
@@ -330,7 +332,7 @@ const users = {
 
       // Send request
       const path = `/users/${id}/tokens`;
-      that._httpGateway
+      that._gateway
         .sendRequest("DELETE", path, null, headers)
         .then(res => resolve(res))
         .catch(err => reject(err));

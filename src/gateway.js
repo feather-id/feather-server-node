@@ -38,18 +38,23 @@ Gateway.prototype = {
         "Content-Type": "application/x-www-form-urlencoded"
       };
 
-      console.log(headers);
-
       // Build request data
       var query = "";
       if (data) {
         data = utils.camelToSnakeCase(data);
         switch (method) {
           case "GET":
-            query = "?";
-            for (let [key, value] of Object.entries(data)) {
-              query += key + "=" + value;
-            }
+            // query = "?";
+            query =
+              "?" +
+              Object.entries(data)
+                .map(([key, value]) => {
+                  return key + "=" + value;
+                })
+                .join("&");
+            // for (let [key, value] of Object.entries(data)) {
+            //   query += key + "=" + value;
+            // }
             break;
 
           case "POST":
