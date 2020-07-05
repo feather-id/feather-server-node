@@ -1,6 +1,7 @@
 "use strict";
 
-var jws = require("jws");
+const jws = require("jws");
+const jwk2pem = require("pem-jwk").jwk2pem;
 const {
   FeatherError,
   FeatherErrorType,
@@ -9,7 +10,7 @@ const {
 
 const idTokenVerifier = {
   _gateway: null,
-  _cachedJWKs: {},
+  _cachedPEMs: {},
   _cachedAudience: null,
 
   /**
@@ -44,17 +45,17 @@ const idTokenVerifier = {
    * @private
    * This may be removed in the future.
    *
-   * Retrieves a public JWK
+   * Retrieves a public key for verifying token signatures
    * @arg id
-   * @return jwk
+   * @return pem
    */
-  _getJWK: function(id) {
+  _getPEM: function(id) {
     const that = this;
     return new Promise(function(resolve, reject) {
       // Check the cache
-      const jwk = that._cachedJWKs[id];
-      if (jwk) {
-        resolve(jwk);
+      const pem = that._cachedPEMs[id];
+      if (pem) {
+        resolve(pem);
         return;
       }
 
@@ -64,8 +65,9 @@ const idTokenVerifier = {
         .sendRequest("GET", path, null)
         .then(jwk => {
           // Cache the key
-          that._cachedJWKs[id] = jwk;
-          resolve(jwk);
+          const pem = jwk2pem(jwk);
+          that._cachedPEMs[id] = pem;
+          resolve(pem);
         })
         .catch(err => {
           reject(err);
@@ -109,13 +111,13 @@ const idTokenVerifier = {
 
       // Check cache for the key
       that
-        ._getJWK(decodedToken.header.kid)
-        .then(jwk => Promise.all([jwk, that._getAudience()]))
-        .then(([jwk, audience]) => {
+        ._getPEM(decodedToken.header.kid)
+        .then(pem => Promise.all([pem, that._getAudience()]))
+        .then(([pem, audience]) => {
           // Verify signature
 
           try {
-            const isValid = jws.verify(tokenStr, rs256, jwk.pem);
+            const isValid = jws.verify(tokenStr, rs256, pem);
             if (!isValid) {
               reject(invalidTokenError);
               return;
