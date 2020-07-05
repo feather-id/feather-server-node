@@ -53,7 +53,7 @@ const idTokenVerifier = {
     return new Promise(function(resolve, reject) {
       // Check the cache
       const jwk = that._cachedJWKs[id];
-      if (!!jwk) {
+      if (jwk) {
         resolve(jwk);
         return;
       }
@@ -79,12 +79,12 @@ const idTokenVerifier = {
       const invalidTokenError = new FeatherError({
         type: FeatherErrorType.VALIDATION,
         code: FeatherErrorCode.TOKEN_INVALID,
-        message: "The session token is invalid"
+        message: "The ID token is invalid"
       });
       const expiredTokenError = new FeatherError({
         type: FeatherErrorType.VALIDATION,
         code: FeatherErrorCode.TOKEN_EXPIRED,
-        message: "The session token is expired"
+        message: "The ID token is expired"
       });
 
       // Decode the token
