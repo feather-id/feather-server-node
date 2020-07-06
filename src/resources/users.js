@@ -206,58 +206,6 @@ const users = {
   },
 
   /**
-   * Updates a user's password
-   * @arg id
-   * @arg newPassword
-   * @arg credentialToken
-   * @return user
-   */
-  updatePassword: function(id, newPassword, credentialToken) {
-    const that = this;
-    return new Promise(function(resolve, reject) {
-      // Validate input
-      if (typeof id !== "string") {
-        reject(
-          new FeatherError({
-            type: FeatherErrorType.VALIDATION,
-            code: FeatherErrorCode.PARAMETER_INVALID,
-            message: `expected param 'id' to be of type 'string'`
-          })
-        );
-        return;
-      }
-      if (typeof newPassword !== "string") {
-        reject(
-          new FeatherError({
-            type: FeatherErrorType.VALIDATION,
-            code: FeatherErrorCode.PARAMETER_INVALID,
-            message: `expected param 'newPassword' to be of type 'string'`
-          })
-        );
-        return;
-      }
-      if (typeof credentialToken !== "string") {
-        reject(
-          new FeatherError({
-            type: FeatherErrorType.VALIDATION,
-            code: FeatherErrorCode.HEADER_MISSING,
-            message: `expected param 'credentialToken' to be of type 'string'`
-          })
-        );
-      }
-      const headers = { "X-Credential-Token": credentialToken };
-
-      // Send request
-      const path = "/users/" + id + "/password";
-      const data = { newPassword };
-      that._gateway
-        .sendRequest("POST", path, data, headers)
-        .then(res => resolve(res))
-        .catch(err => reject(err));
-    });
-  },
-
-  /**
    * Refreshes a user's tokens
    * @arg id
    * @arg refreshToken

@@ -115,7 +115,6 @@ const idTokenVerifier = {
         .then(pem => Promise.all([pem, that._getAudience()]))
         .then(([pem, audience]) => {
           // Verify signature
-
           try {
             const isValid = jws.verify(tokenStr, rs256, pem);
             if (!isValid) {
