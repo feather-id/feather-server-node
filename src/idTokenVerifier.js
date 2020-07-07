@@ -60,7 +60,7 @@ const idTokenVerifier = {
       }
 
       // Send request
-      var path = `/.well-known/jwks/${id}.json`;
+      var path = `/.well-known/jwks/${id}`;
       that._gateway
         .sendRequest("GET", path, null)
         .then(jwk => {
@@ -127,7 +127,7 @@ const idTokenVerifier = {
           }
 
           // Verify claims
-          if (decodedToken.payload.iss !== "feather") {
+          if (decodedToken.payload.iss !== "api.feather.id") {
             reject(invalidTokenError);
             return;
           }
@@ -149,8 +149,9 @@ const idTokenVerifier = {
 
           // Return the parsed user
           const user = {
+            object: "user",
             id: decodedToken.payload.sub,
-            object: "user"
+            isAnonymous: decodedToken.payload.anon
           };
           resolve(user);
         })
